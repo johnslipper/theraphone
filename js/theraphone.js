@@ -98,6 +98,7 @@ class TheraPhone {
   }
 
   noteOn() {
+    if(this.note.osc) return // Note already playing
     var self = this // Grrr
     console.info('Note On!')
     this.note.osc = this._createOsc()
