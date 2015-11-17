@@ -5,11 +5,8 @@ import {displayMotionValues} from './debug'
 let theraPhone = new TheraPhone()
 let audioPad = new AudioPad({
   elID: "audioPad",
-  onmousedown: theraPhone.noteOn,
-  ontouchstart: theraPhone.noteOn,
-  onmouseup: theraPhone.noteOff,
-  onmouseleave:theraPhone.noteOff,
-  ontouchend: theraPhone.noteOff,
+  startEvent: theraPhone.noteOn,
+  stopEvent: theraPhone.noteOff,
   bindEventsTo: theraPhone
 })
 

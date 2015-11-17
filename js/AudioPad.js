@@ -2,37 +2,57 @@ class AudioPad {
   constructor(
     config={
       elID:"audioPad",
-      onmousedown: function() {},
-      ontouchstart: function() {},
-      onmouseup: function() {},
-      onmouseleave: function() {},
-      ontouchend: function() {},
+      startEvent: function() {},
+      stopEvent: function() {},
+      updateEvent: function() {},
       bindEventsTo: this
     }) {
-    this.setupCanvas(config)
+      this.config = config
+    this._setupCanvas()
   }
 
-  setupCanvas(config) {
-    this.canvas = document.getElementById(config.elID)
+  _setupCanvas() {
+    this.canvas = document.getElementById(this.config.elID)
     if(this.canvas === null) {
       console.error('No SynthPad Element Found')
       return false
     }
-    this.setupEventListeners(config)
+    this._setupEventListeners()
   }
 
-  setupEventListeners(config) {
+  _setupEventListeners() {
     // Disables scrolling on touch devices.
     document.body.addEventListener('touchmove', function(event) {
-      event.preventDefault();
-    }, false);
+      event.preventDefault()
+    }, false)
 
-    document.addEventListener('mouseleave', config.onmouseleave.bind(config.bindEventsTo))
+    document.addEventListener('mouseleave', this._stopEvent.bind(this))
 
-    this.canvas.addEventListener('touchstart', config.ontouchstart.bind(config.bindEventsTo))
-    this.canvas.addEventListener('touchend', config.ontouchend.bind(config.bindEventsTo))
-    this.canvas.addEventListener('mousedown', config.onmousedown.bind(config.bindEventsTo))
-    this.canvas.addEventListener('mouseup', config.onmouseup.bind(config.bindEventsTo))
+    this.canvas.addEventListener('touchstart', this._startEvent.bind(this))
+    this.canvas.addEventListener('touchend', this._stopEvent.bind(this))
+
+    this.canvas.addEventListener('mousedown', this._startEvent.bind(this))
+    this.canvas.addEventListener('mouseup', this._stopEvent.bind(this))
+  }
+
+  _startEvent(e) {
+    this.canvas.addEventListener('mousemove', this._updateEvent.bind(this))
+    this.canvas.addEventListener('touchmove', this._updateEvent.bind(this))
+    this.canvas.addEventListener('mouseout', this._stopEvent.bind(this))
+    var callback = this.config.startEvent.bind(this.config.bindEventsTo)
+    callback(e)
+  }
+
+  _stopEvent(e) {
+    this.canvas.removeEventListener('mousemove', this._updateEvent)
+    this.canvas.removeEventListener('touchmove', this._updateEvent)
+    this.canvas.removeEventListener('mouseout', this._stopEvent)
+    var callback = this.config.stopEvent.bind(this.config.bindEventsTo)
+    callback(e)
+  }
+
+  _updateEvent(e) {
+    console.log(e);
   }
 }
 
