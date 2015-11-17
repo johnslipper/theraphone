@@ -1,11 +1,21 @@
-import TheraPhone from './theraphone'
+import TheraPhone from './TheraPhone'
+import AudioPad from './AudioPad'
 import {displayMotionValues} from './debug'
 
-let theraPhone = new TheraPhone();
-
-document.addEventListener("DOMContentLoaded", function(event) {
-  document.documentElement.addEventListener('click', theraPhone.togglePlayback.bind(theraPhone))
+let theraPhone = new TheraPhone()
+let audioPad = new AudioPad({
+  elID: "audioPad",
+  onmousedown: theraPhone.noteOn,
+  ontouchstart: theraPhone.noteOn,
+  onmouseup: theraPhone.noteOff,
+  onmouseleave:theraPhone.noteOff,
+  ontouchend: theraPhone.noteOff,
+  bindEventsTo: theraPhone
 })
+
+// document.addEventListener("DOMContentLoaded", function(event) {
+//   document.documentElement.addEventListener('click', theraPhone.togglePlayback.bind(theraPhone))
+// })
 
 // Setup Accelerometer
 if(window.DeviceMotionEvent != undefined) {
