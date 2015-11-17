@@ -12,9 +12,9 @@ let audioPad = new AudioPad({
 })
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  // var iOSFix = document.getElementById('audioPad')
   // Allow user triggered audio playback on iPhone (better fix needed)
-  var iOSFix = document.documentElement
+  var iOSFix = document.getElementById('audioPad')
+  // var iOSFix = document.documentElement
   iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
 })
 

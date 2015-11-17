@@ -148,7 +148,7 @@ class TheraPhone {
 
   startEvent() {
     // console.info('Start event')
-    if(!this.note.osc) this.noteOn()
+    // if(!this.note.osc) this.noteOn()
     this.note.gain.gain.value = 1
   }
 
@@ -158,7 +158,7 @@ class TheraPhone {
   }
 
   updateEvent(values) {
-    // console.log(values)
+    console.log(values)
   }
 
 }
