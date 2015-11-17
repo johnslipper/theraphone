@@ -3,27 +3,32 @@ class TheraPhone {
       config = {
         useReverb: true,
         useVibrato: true,
-        reverbImpulseFile: 'audio/factory.hall.wav',
+        reverbImpulseFile: 'audio/factory.hall.wav'
       }
   ) {
-    this.isPlaying = false
     this._setupCoreAudio(config)
   }
 
   _setupCoreAudio(config) {
     this.ctx = this._createContext()
     this.note = {
-      gain: this._createGain()
+      gain: this._createGain(0)
     }
     this.master = {
       gain: this._createGain(1)
     }
 
-    if(config.useReverb) this._createReverb(config.reverbImpulseFile)
-    if(config.useVibrato) this._createVibrato();
+    if(config.useReverb) {
+      this._createReverb(config.reverbImpulseFile)
+      this.note.gain.connect(this.reverb.gain)
+    }
+    else {
+      this.note.gain.connect(this.master.gain)
+    }
+    if(config.useVibrato) this._createVibrato()
 
-    this.note.gain.connect(this.master.gain)
     this.master.gain.connect(this.ctx.destination)
+
   }
 
   _createContext() {
@@ -48,7 +53,7 @@ class TheraPhone {
   _createReverb(reverbImpulseFile) {
     this.reverb = {
       convolver: this.ctx.createConvolver(),
-      gain: this._createGain(.25)
+      gain: this._createGain(.5)
     }
     this._loadImpulse(reverbImpulseFile)
     this.reverb.convolver.connect(this.reverb.gain)
@@ -58,7 +63,7 @@ class TheraPhone {
   _createDelay(time=.03) {
     var delay = this.ctx.createDelay()
     delay.delayTime.value = 0.03
-    return delay;
+    return delay
   }
 
   _createVibrato() {
@@ -86,67 +91,43 @@ class TheraPhone {
     request.send()
   }
 
-  _logProps() {
-    console.log(
-      this.ctx,
-      this.note,
-      this.reverb,
-      this.vibrato,
-      this.master,
-      this.isPlaying
-    )
-  }
-
   noteOn() {
     if(this.note.osc) return // Note already playing
-    var self = this // Grrr
     console.info('Note On!')
     this.note.osc = this._createOsc()
     this.note.osc.connect(this.note.gain)
-    if(this.reverb) this.note.osc.connect(this.reverb.convolver)
+    if(this.reverb) this.note.gain.connect(this.reverb.convolver)
 
     // Bit of a hacky vibrato, hopefully work out a web audio equivalent
     if(this.vibrato) {
-      this.vibrato.intervalFunction = setInterval(function() {
+      this.vibrato.intervalFunction = setInterval(() => {
           // Forwards!
-          if(self.vibrato.direction === 1) {
-            if(self.vibrato.currentVal < self.vibrato.range) {
-              self.vibrato.currentVal = self.vibrato.currentVal + self.vibrato.increment
+          if(this.vibrato.direction === 1) {
+            if(this.vibrato.currentVal < this.vibrato.range) {
+              this.vibrato.currentVal = this.vibrato.currentVal + this.vibrato.increment
             }
-            else self.vibrato.direction = 0 // change direction
+            else this.vibrato.direction = 0 // change direction
           }
           // Backwards!
-          else if(self.vibrato.direction === 0) {
-            if(self.vibrato.currentVal > 0) {
-              self.vibrato.currentVal = self.vibrato.currentVal - self.vibrato.increment
+          else if(this.vibrato.direction === 0) {
+            if(this.vibrato.currentVal > 0) {
+              this.vibrato.currentVal = this.vibrato.currentVal - this.vibrato.increment
             }
-            else self.vibrato.direction = 1 // change direction
+            else this.vibrato.direction = 1 // change direction
           }
-          // console.log(self.vibrato.currentVal);
-          self.updateNoteDetune(self.vibrato.currentVal);
+          this.updateNoteDetune(this.vibrato.currentVal)
       }, this.vibrato.interval)
     }
     this.note.gain.connect(this.master.gain)
     this.note.osc.start(0)
-    this.note.gain.value = .75
-    this.isPlaying = true
-
-    // this._logProps(); // Testing
   }
 
   noteOff() {
-    console.info('Note Off')
     if(!this.note.osc) return false
-    this.note.gain.value = 0
+    console.info('Note Off')
     this.note.osc.stop(0)
     this.note.osc = null
-    this.isPlaying = false
     clearInterval(this.vibrato.intervalFunction)
-  }
-
-  togglePlayback() {
-    if(this.isPlaying) { this.noteOff() }
-    else { this.noteOn() }
   }
 
   updateNotePitch(freq) {
@@ -158,6 +139,26 @@ class TheraPhone {
   updateNoteDetune(cents) {
     if(!this.note.osc) return false
     this.note.osc.detune.value = cents
+  }
+
+  updateVolume(vol) {
+    if(!this.note.gain) return false
+    this.note.gain.value = vol
+  }
+
+  startEvent() {
+    // console.info('Start event')
+    if(!this.note.osc) this.noteOn()
+    this.note.gain.gain.value = 1
+  }
+
+  stopEvent() {
+    // console.info('Stop event')
+    this.note.gain.gain.value = 0
+  }
+
+  updateEvent(values) {
+    // console.log(values)
   }
 
 }

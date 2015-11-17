@@ -5,14 +5,18 @@ import {displayMotionValues} from './debug'
 let theraPhone = new TheraPhone()
 let audioPad = new AudioPad({
   elID: "audioPad",
-  startEvent: theraPhone.noteOn,
-  stopEvent: theraPhone.noteOff,
+  startEvent: theraPhone.startEvent,
+  stopEvent: theraPhone.stopEvent,
+  updateEvent: theraPhone.updateEvent,
   bindEventsTo: theraPhone
 })
 
-// document.addEventListener("DOMContentLoaded", function(event) {
-//   document.documentElement.addEventListener('click', theraPhone.togglePlayback.bind(theraPhone))
-// })
+document.addEventListener("DOMContentLoaded", function(event) {
+  // var iOSFix = document.getElementById('audioPad')
+  // Allow user triggered audio playback on iPhone (better fix needed)
+  var iOSFix = document.documentElement
+  iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
+})
 
 // Setup Accelerometer
 if(window.DeviceMotionEvent != undefined) {

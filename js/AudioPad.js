@@ -12,8 +12,8 @@ class AudioPad {
   }
 
   _setupCanvas() {
-    this.canvas = document.getElementById(this.config.elID)
-    if(this.canvas === null) {
+    this.element = document.getElementById(this.config.elID)
+    if(this.element === null) {
       console.error('No SynthPad Element Found')
       return false
     }
@@ -28,31 +28,53 @@ class AudioPad {
 
     document.addEventListener('mouseleave', this._stopEvent.bind(this))
 
-    this.canvas.addEventListener('touchstart', this._startEvent.bind(this))
-    this.canvas.addEventListener('touchend', this._stopEvent.bind(this))
+    this.element.addEventListener('touchstart', this._startEvent.bind(this))
+    this.element.addEventListener('touchend', this._stopEvent.bind(this))
 
-    this.canvas.addEventListener('mousedown', this._startEvent.bind(this))
-    this.canvas.addEventListener('mouseup', this._stopEvent.bind(this))
+    this.element.addEventListener('mousedown', this._startEvent.bind(this))
+    this.element.addEventListener('mouseup', this._stopEvent.bind(this))
   }
 
-  _startEvent(e) {
-    this.canvas.addEventListener('mousemove', this._updateEvent.bind(this))
-    this.canvas.addEventListener('touchmove', this._updateEvent.bind(this))
-    this.canvas.addEventListener('mouseout', this._stopEvent.bind(this))
-    var callback = this.config.startEvent.bind(this.config.bindEventsTo)
-    callback(e)
+  _startEvent() {
+    this.element.addEventListener('mousemove', this._updateEvent.bind(this))
+    this.element.addEventListener('touchmove', this._updateEvent.bind(this))
+    this.element.addEventListener('mouseout', this._stopEvent.bind(this))
+    let callback = this.config.startEvent.bind(this.config.bindEventsTo)
+
+    callback()
   }
 
-  _stopEvent(e) {
-    this.canvas.removeEventListener('mousemove', this._updateEvent)
-    this.canvas.removeEventListener('touchmove', this._updateEvent)
-    this.canvas.removeEventListener('mouseout', this._stopEvent)
-    var callback = this.config.stopEvent.bind(this.config.bindEventsTo)
-    callback(e)
+  _stopEvent() {
+    this.element.removeEventListener('mousemove', this._updateEvent)
+    this.element.removeEventListener('touchmove', this._updateEvent)
+    this.element.removeEventListener('mouseout', this._stopEvent)
+    let callback = this.config.stopEvent.bind(this.config.bindEventsTo)
+    callback()
   }
 
-  _updateEvent(e) {
-    console.log(e);
+  _updateEvent(event) {
+    let outputValues = this._calcOutputValues(event);
+    let callback = this.config.updateEvent.bind(this.config.bindEventsTo)
+    callback(outputValues)
+  }
+
+  _calcOutputValues(event) {
+    let x=0, y=0;
+    if (event.type == 'mousedown' || event.type == 'mousemove') {
+      x = event.x,
+      y = event.y
+    }
+    else if (event.type == 'touchstart' || event.type == 'touchmove') {
+      let touch = event.touches[0];
+      x = touch.pageX,
+      y = touch.pageY
+    }
+    x = x - this.element.offsetLeft
+    y = y - this.element.offsetTop
+    return {
+      x: x,
+      y: y
+    }
   }
 }
 
