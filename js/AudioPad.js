@@ -59,21 +59,23 @@ class AudioPad {
   }
 
   _calcOutputValues(event) {
-    let x=0, y=0;
+    let xInput=0, yInput=0;
+    let width = this.element.offsetWidth;
+    let height = this.element.offsetHeight;
     if (event.type == 'mousedown' || event.type == 'mousemove') {
-      x = event.x,
-      y = event.y
+      xInput = event.x,
+      yInput = event.y
     }
     else if (event.type == 'touchstart' || event.type == 'touchmove') {
       let touch = event.touches[0];
-      x = touch.pageX,
-      y = touch.pageY
+      xInput = touch.pageX,
+      yInput = touch.pageY
     }
-    x = x - this.element.offsetLeft
-    y = y - this.element.offsetTop
+    let xOutput = ((xInput - this.element.offsetLeft) / width)
+    let yOutput = ((yInput - this.element.offsetTop) / height)
     return {
-      x: x,
-      y: y
+      x: xOutput,
+      y: yOutput
     }
   }
 }

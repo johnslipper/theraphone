@@ -158,7 +158,7 @@ class TheraPhone {
   }
 
   updateEvent(values) {
-    console.log(values)
+    // console.log(values)
   }
 
 }
