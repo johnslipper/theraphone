@@ -15,8 +15,20 @@ document.addEventListener("DOMContentLoaded", function() {
   // Allow user triggered audio playback on iPhone (better fix needed)
   var iOSFix = document.getElementById('audioPad')
   var muteButton = document.getElementById('mute')
-  iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
-  
+  var intro = document.getElementById('intro')
+  var closeIntro = document.getElementById('closeIntro')
+
+  // Intro Screen
+
+  var hideIntro = function() {
+    intro.style.display = 'none'
+  }
+  closeIntro.addEventListener('click', hideIntro)
+
+  // iOS Fix
+  closeIntro.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
+  // iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone)) // Temp
+
   // Mute button
   muteButton.addEventListener('touchstart', theraPhone.mute.bind(theraPhone))
   muteButton.addEventListener('touchend', theraPhone.unMute.bind(theraPhone))
