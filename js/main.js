@@ -14,7 +14,12 @@ let audioPad = new AudioPad({
 document.addEventListener("DOMContentLoaded", function() {
   // Allow user triggered audio playback on iPhone (better fix needed)
   var iOSFix = document.getElementById('audioPad')
+  var muteButton = document.getElementById('mute')
   iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
+  
+  // Mute button
+  muteButton.addEventListener('touchstart', theraPhone.mute.bind(theraPhone))
+  muteButton.addEventListener('touchend', theraPhone.unMute.bind(theraPhone))
 })
 
 // Setup Accelerometer
