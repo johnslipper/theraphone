@@ -72,7 +72,8 @@ class TheraPhone {
       interval: 1,
       increment: 10,
       currentVal: 0,
-      direction: 1
+      direction: 1,
+      update: this.updateNoteDetune
     }
   }
 
@@ -91,6 +92,28 @@ class TheraPhone {
     request.send()
   }
 
+  _oscillateValues(params) {
+    // Forwards!
+    if(params.direction === 1) {
+      if(params.currentVal < params.range) {
+        params.currentVal = params.currentVal + params.increment
+      }
+      else params.direction = 0 // change direction
+    }
+    // Backwards!
+    else if(params.direction === 0) {
+      if(params.currentVal > 0) {
+        params.currentVal = params.currentVal - params.increment
+      }
+      else params.direction = 1 // change direction
+    }
+    let updateFunction = params.update.bind(this)
+    updateFunction(params.currentVal)
+    setTimeout(() => {
+      this._oscillateValues(params)
+    }, params.interval)
+  }
+
   noteOn() {
     if(this.note.osc) return // Note already playing
     console.info('Note On!')
@@ -99,25 +122,7 @@ class TheraPhone {
     if(this.reverb) this.note.gain.connect(this.reverb.convolver)
 
     // Bit of a hacky vibrato, hopefully work out a web audio equivalent
-    if(this.vibrato) {
-      this.vibrato.intervalFunction = setInterval(() => {
-          // Forwards!
-          if(this.vibrato.direction === 1) {
-            if(this.vibrato.currentVal < this.vibrato.range) {
-              this.vibrato.currentVal = this.vibrato.currentVal + this.vibrato.increment
-            }
-            else this.vibrato.direction = 0 // change direction
-          }
-          // Backwards!
-          else if(this.vibrato.direction === 0) {
-            if(this.vibrato.currentVal > 0) {
-              this.vibrato.currentVal = this.vibrato.currentVal - this.vibrato.increment
-            }
-            else this.vibrato.direction = 1 // change direction
-          }
-          this.updateNoteDetune(this.vibrato.currentVal)
-      }, this.vibrato.interval)
-    }
+    if(this.vibrato) this._oscillateValues(this.vibrato)
     this.note.gain.connect(this.master.gain)
     this.note.osc.start(0)
   }
@@ -146,6 +151,11 @@ class TheraPhone {
     this.note.gain.gain.value = vol
   }
 
+  updateVibratoRange(range=150) {
+    // console.log(range);
+    if(this.vibrato) this.vibrato.range = range
+  }
+
   startEvent() {
     // console.info('Start event')
     // if(!this.note.osc) this.noteOn()
@@ -159,7 +169,10 @@ class TheraPhone {
 
   updateEvent(values={x:0,y:0}) {
     // console.log(values)
-    if(values.y >= 0) this.updateVolume(1 - values.y)
+    let volume = 1 - values.y
+    let range = (values.x + 1) * 100
+    if(values.x >= 0) this.updateVibratoRange(range)
+    if(values.y >= 0) this.updateVolume(volume)
   }
 
 }
