@@ -135,6 +135,14 @@ class TheraPhone {
     clearInterval(this.vibrato.intervalFunction)
   }
 
+  mute() {
+    this.master.gain.gain.value = 0
+  }
+
+  unMute() {
+    this.master.gain.gain.value = 1
+  }
+
   updateNotePitch(freq) {
     if(!this.note.osc) return false
     this.note.osc.frequency.value = freq
