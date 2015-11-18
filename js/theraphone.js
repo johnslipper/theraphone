@@ -136,7 +136,6 @@ class TheraPhone {
   }
 
   updateNotePitch(freq) {
-    // console.log('Pitch: '+ freq)
     if(!this.note.osc) return false
     this.note.osc.frequency.value = freq
   }
@@ -152,23 +151,20 @@ class TheraPhone {
   }
 
   updateVibratoRange(range=150) {
-    // console.log(range);
     if(this.vibrato) this.vibrato.range = range
   }
 
   startEvent() {
-    // console.info('Start event')
-    // if(!this.note.osc) this.noteOn()
+    console.info('Start event')
     this.note.gain.gain.value = 1
   }
 
   stopEvent() {
-    // console.info('Stop event')
+    console.info('Stop event')
     this.note.gain.gain.value = 0
   }
 
   updateEvent(values={x:0,y:0}) {
-    // console.log(values)
     let volume = 1 - values.y
     let range = (values.x + 1) * 100
     if(values.x >= 0) this.updateVibratoRange(range)

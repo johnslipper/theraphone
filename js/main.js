@@ -11,10 +11,9 @@ let audioPad = new AudioPad({
   bindEventsTo: theraPhone
 })
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function() {
   // Allow user triggered audio playback on iPhone (better fix needed)
   var iOSFix = document.getElementById('audioPad')
-  // var iOSFix = document.documentElement
   iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
 })
 
@@ -26,10 +25,6 @@ if(window.DeviceMotionEvent != undefined) {
     // Pitch adjust
     var yFreq = e.accelerationIncludingGravity.y + 10 // Make value 0 - 20
     if(yFreq > 0) { theraPhone.updateNotePitch((yFreq*30)+200) }
-
-    // Volume adjust
-    var xVol = (e.accelerationIncludingGravity.x + 10) / 20 // Make value 0 - 1
-    // if(noteGain && xVol >= 0) { setNoteVolume(xVol/2) }
   }
 }
 else { console.log('No accelerometer: (TO DO)') }
