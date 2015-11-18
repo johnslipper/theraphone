@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // Setup Accelerometer
 if(window.DeviceMotionEvent != undefined) {
   window.ondevicemotion = function(e) {
-    displayMotionValues(e) // Display values in debug div
+    // displayMotionValues(e) // Display values in debug div
 
     // Pitch adjust
     var yFreq = e.accelerationIncludingGravity.y + 10 // Make value 0 - 20
