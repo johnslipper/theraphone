@@ -154,6 +154,10 @@ class TheraPhone {
     if(this.vibrato) this.vibrato.range = range
   }
 
+  updateVibratoIncrement(increment=10) {
+    if(this.vibrato) this.vibrato.increment = increment
+  }
+
   startEvent() {
     console.info('Start event')
     this.note.gain.gain.value = 1
@@ -166,7 +170,9 @@ class TheraPhone {
 
   updateEvent(values={x:0,y:0}) {
     let volume = 1 - values.y
-    let range = (values.x + 1) * 100
+    let range = (values.x) * 250
+    let increment = values.x * 10 + 1
+    if(values.x >= 0) this.updateVibratoIncrement(increment)
     if(values.x >= 0) this.updateVibratoRange(range)
     if(values.y >= 0) this.updateVolume(volume)
   }
