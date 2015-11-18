@@ -35,39 +35,41 @@ class AudioPad {
     this.element.addEventListener('mouseup', this._stopEvent.bind(this))
   }
 
-  _startEvent() {
+  _startEvent(e) {
     this.element.addEventListener('mousemove', this._updateEvent.bind(this))
     this.element.addEventListener('touchmove', this._updateEvent.bind(this))
     this.element.addEventListener('mouseout', this._stopEvent.bind(this))
-    let callback = this.config.startEvent.bind(this.config.bindEventsTo)
-
-    callback()
+    let updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo)
+    let startCallback = this.config.startEvent.bind(this.config.bindEventsTo)
+    let outputValues = this._calcOutputValues(event)
+    startCallback()
+    updateCallback(outputValues)
   }
 
   _stopEvent() {
     this.element.removeEventListener('mousemove', this._updateEvent)
     this.element.removeEventListener('touchmove', this._updateEvent)
     this.element.removeEventListener('mouseout', this._stopEvent)
-    let callback = this.config.stopEvent.bind(this.config.bindEventsTo)
-    callback()
+    let stopCallback = this.config.stopEvent.bind(this.config.bindEventsTo)
+    stopCallback()
   }
 
   _updateEvent(event) {
-    let outputValues = this._calcOutputValues(event);
-    let callback = this.config.updateEvent.bind(this.config.bindEventsTo)
-    callback(outputValues)
+    let outputValues = this._calcOutputValues(event)
+    let updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo)
+    updateCallback(outputValues)
   }
 
   _calcOutputValues(event) {
-    let xInput=0, yInput=0;
-    let width = this.element.offsetWidth;
-    let height = this.element.offsetHeight;
+    let xInput=0, yInput=0
+    let width = this.element.offsetWidth
+    let height = this.element.offsetHeight
     if (event.type == 'mousedown' || event.type == 'mousemove') {
       xInput = event.x,
       yInput = event.y
     }
     else if (event.type == 'touchstart' || event.type == 'touchmove') {
-      let touch = event.touches[0];
+      let touch = event.touches[0]
       xInput = touch.pageX,
       yInput = touch.pageY
     }

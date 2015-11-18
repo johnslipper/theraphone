@@ -142,8 +142,8 @@ class TheraPhone {
   }
 
   updateVolume(vol) {
-    if(!this.note.gain) return false
-    this.note.gain.value = vol
+    if(!this.note.gain || vol < 0 || vol > 1) return false
+    this.note.gain.gain.value = vol
   }
 
   startEvent() {
@@ -157,8 +157,9 @@ class TheraPhone {
     this.note.gain.gain.value = 0
   }
 
-  updateEvent(values) {
+  updateEvent(values={x:0,y:0}) {
     // console.log(values)
+    if(values.y >= 0) this.updateVolume(1 - values.y)
   }
 
 }
