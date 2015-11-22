@@ -5,7 +5,8 @@ class AudioPad {
       startEvent: function() {},
       stopEvent: function() {},
       updateEvent: function() {},
-      bindEventsTo: this
+      bindEventsTo: this,
+      useTouchEvents: true
     }) {
       this.config = config
     this._setupCanvas()
@@ -21,24 +22,29 @@ class AudioPad {
   }
 
   _setupEventListeners() {
-    // Disables scrolling on touch devices.
-    document.body.addEventListener('touchmove', function(event) {
-      event.preventDefault()
-    }, false)
-
-    document.addEventListener('mouseleave', this._stopEvent.bind(this))
-
-    this.element.addEventListener('touchstart', this._startEvent.bind(this))
-    this.element.addEventListener('touchend', this._stopEvent.bind(this))
-
-    this.element.addEventListener('mousedown', this._startEvent.bind(this))
-    this.element.addEventListener('mouseup', this._stopEvent.bind(this))
+    if(this.config.useTouchEvents) {
+      // Disables scrolling on touch devices.
+      document.body.addEventListener('touchmove', (event) => {
+        event.preventDefault()
+      }, false)
+      this.element.addEventListener('touchstart', this._startEvent.bind(this))
+      this.element.addEventListener('touchend', this._stopEvent.bind(this))
+    }
+    else {
+      document.addEventListener('mouseleave', this._stopEvent.bind(this))
+      this.element.addEventListener('mousedown', this._startEvent.bind(this))
+      this.element.addEventListener('mouseup', this._stopEvent.bind(this))
+    }
   }
 
   _startEvent(e) {
-    this.element.addEventListener('mousemove', this._updateEvent.bind(this))
-    this.element.addEventListener('touchmove', this._updateEvent.bind(this))
-    this.element.addEventListener('mouseout', this._stopEvent.bind(this))
+    if(this.config.useTouchEvents) {
+      this.element.addEventListener('touchmove', this._updateEvent.bind(this))
+    }
+    else {
+      this.element.addEventListener('mousemove', this._updateEvent.bind(this))
+      this.element.addEventListener('mouseleave', this._stopEvent.bind(this))
+    }
     let updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo)
     let startCallback = this.config.startEvent.bind(this.config.bindEventsTo)
     let outputValues = this._calcOutputValues(event)
@@ -47,9 +53,13 @@ class AudioPad {
   }
 
   _stopEvent() {
-    this.element.removeEventListener('mousemove', this._updateEvent)
-    this.element.removeEventListener('touchmove', this._updateEvent)
-    this.element.removeEventListener('mouseout', this._stopEvent)
+    if(this.config.useTouchEvents) {
+      this.element.removeEventListener('touchmove', this._updateEvent)
+    }
+    else {
+      this.element.removeEventListener('mousemove', this._updateEvent)
+      this.element.removeEventListener('mouseleave', this._stopEvent)
+    }
     let stopCallback = this.config.stopEvent.bind(this.config.bindEventsTo)
     stopCallback()
   }
