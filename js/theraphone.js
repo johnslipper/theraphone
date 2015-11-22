@@ -177,21 +177,21 @@ class TheraPhone {
     if(this.vibrato) this.vibrato.increment = increment
   }
 
-  // Start playback event
+  // Start playback external callback event
   startEvent() {
     console.info('Start event')
     document.body.classList.add('playing') // Add body CSS class
-    this.note.gain.gain.value = 1 // Silence main note gain
+    // this.updateVolume(1) // Turn up main note gain
   }
 
-  // Stop playback event
+  // Stop playback external callback event
   stopEvent() {
     console.info('Stop event')
     document.body.classList.remove('playing') // Remove body CSS class
-    this.note.gain.gain.value = 0 // Silence main note gain
+    this.updateVolume(0) // Silence main note gain
   }
 
-  // Update values event (Link externally to dynamically update values)
+  // Update values external callback event (dynamically update class values)
   updateEvent(values={x:0,y:0}) {
     let volume = 1 - values.y
     let range = (values.x) * 250
