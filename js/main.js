@@ -18,8 +18,10 @@ let audioPad = new AudioPad({
   bindEventsTo: theraPhone
 })
 
+// On DOM Ready
 document.addEventListener("DOMContentLoaded", function() {
 
+  // Store elements
   var iOSFix = document.getElementById('audioPad')
   var muteButton = document.getElementById('mute')
   var intro = document.getElementById('intro')
@@ -29,7 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
   var hideIntro = function() {
     intro.style.display = 'none'
   }
-  closeIntro.addEventListener('click', hideIntro)
+
+  closeIntro.addEventListener('click', hideIntro) // Hide intro window on button click
 
   // iOS Fix (use intro closing button to allow audio to run)
   closeIntro.addEventListener('click', theraPhone.noteOn.bind(theraPhone))

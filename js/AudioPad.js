@@ -12,6 +12,7 @@ class AudioPad {
     this._setupCanvas()
   }
 
+  // Link to canvas element
   _setupCanvas() {
     this.element = document.getElementById(this.config.elID)
     if(this.element === null) {
@@ -21,6 +22,7 @@ class AudioPad {
     this._setupEventListeners()
   }
 
+  // Setup pad event listeners based on whether touch is supported
   _setupEventListeners() {
     if(this.config.useTouchEvents) {
       // Disables scrolling on touch devices.
@@ -37,6 +39,7 @@ class AudioPad {
     }
   }
 
+  // Internal start event - also triggers external event
   _startEvent(e) {
     if(this.config.useTouchEvents) {
       this.element.addEventListener('touchmove', this._updateEvent.bind(this))
@@ -52,6 +55,7 @@ class AudioPad {
     updateCallback(outputValues)
   }
 
+  // Internal stop event - also triggers external event
   _stopEvent() {
     if(this.config.useTouchEvents) {
       this.element.removeEventListener('touchmove', this._updateEvent)
@@ -64,20 +68,24 @@ class AudioPad {
     stopCallback()
   }
 
+  // Internal update event - also triggers external event
   _updateEvent(event) {
     let outputValues = this._calcOutputValues(event)
     let updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo)
     updateCallback(outputValues)
   }
 
+  // Calculate output values (between 0 and 1) based on pad coordinates
   _calcOutputValues(event) {
     let xInput=0, yInput=0
     let width = this.element.offsetWidth
     let height = this.element.offsetHeight
+    // If non-touch event
     if (event.type == 'mousedown' || event.type == 'mousemove') {
       xInput = event.x,
       yInput = event.y
     }
+    // If touch event
     else if (event.type == 'touchstart' || event.type == 'touchmove') {
       let touch = event.touches[0]
       xInput = touch.pageX,

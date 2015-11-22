@@ -8,7 +8,7 @@ class TheraPhone {
   ) {
     this._setupCoreAudio(config)
   }
-
+  // Setup core components
   _setupCoreAudio(config) {
     this.ctx = this._createContext()
     this.note = {
@@ -18,6 +18,7 @@ class TheraPhone {
       gain: this._createGain(1)
     }
 
+    // Create reverb and connect to note
     if(config.useReverb) {
       this._createReverb(config.reverbImpulseFile)
       this.note.gain.connect(this.reverb.gain)
@@ -31,18 +32,21 @@ class TheraPhone {
 
   }
 
+  // Create audio context
   _createContext() {
     // Create an audio context.
     window.AudioContext = window.AudioContext || window.webkitAudioContext
     return new window.AudioContext()
   }
 
+  // Create default gain node
   _createGain(vol=.5) {
     let gain = this.ctx.createGain()
     gain.gain.value = vol
     return gain
   }
 
+  // Create default oscillator node
   _createOsc(freq=440, type="sine") {
     let osc = this.ctx.createOscillator()
     osc.type = type
@@ -50,6 +54,7 @@ class TheraPhone {
     return osc
   }
 
+  // Create covolver reverb
   _createReverb(reverbImpulseFile) {
     this.reverb = {
       convolver: this.ctx.createConvolver(),
@@ -60,23 +65,7 @@ class TheraPhone {
     this.reverb.gain.connect(this.master.gain)
   }
 
-  _createDelay(time=.03) {
-    var delay = this.ctx.createDelay()
-    delay.delayTime.value = 0.03
-    return delay
-  }
-
-  _createVibrato() {
-    this.vibrato = {
-      range: 150,
-      interval: 1,
-      increment: 10,
-      currentVal: 0,
-      direction: 1,
-      update: this.updateNoteDetune
-    }
-  }
-
+  // Load impluse file for reverb
   _loadImpulse(fileName) {
     var url = fileName
     var request = new XMLHttpRequest()
@@ -92,6 +81,19 @@ class TheraPhone {
     request.send()
   }
 
+  // Create vibrato object
+  _createVibrato() {
+    this.vibrato = {
+      range: 150,
+      interval: 1,
+      increment: 10,
+      currentVal: 0,
+      direction: 1,
+      update: this.updateNoteDetune
+    }
+  }
+
+  // Util function to oscillate between range of values
   _oscillateValues(params) {
     // Forwards!
     if(params.direction === 1) {
@@ -114,6 +116,7 @@ class TheraPhone {
     }, params.interval)
   }
 
+  // Start web audio chain (important: Note gain is silent at this point)
   noteOn() {
     if(this.note.osc) return // Note already playing
     console.info('Note On!')
@@ -127,6 +130,7 @@ class TheraPhone {
     this.note.osc.start(0)
   }
 
+  // Stop audio chain (will destroy the one-use note oscillator)
   noteOff() {
     if(!this.note.osc) return false
     console.info('Note Off')
@@ -135,49 +139,59 @@ class TheraPhone {
     clearInterval(this.vibrato.intervalFunction)
   }
 
+  // Mute master gain
   mute() {
     this.master.gain.gain.value = 0
   }
 
+  // Unmute master gain
   unMute() {
     this.master.gain.gain.value = 1
   }
 
+  // Update pitch of main note oscillator
   updateNotePitch(freq) {
     if(!this.note.osc) return false
     this.note.osc.frequency.value = freq
   }
 
+  // Update main note oscillator detune value
   updateNoteDetune(cents) {
     if(!this.note.osc) return false
     this.note.osc.detune.value = cents
   }
 
+  // Update main note gain
   updateVolume(vol) {
     if(!this.note.gain || vol < 0 || vol > 1) return false
     this.note.gain.gain.value = vol
   }
 
+  // Update range of note vibrato
   updateVibratoRange(range=150) {
     if(this.vibrato) this.vibrato.range = range
   }
 
+  // Update increment used in vibrato oscillator function
   updateVibratoIncrement(increment=10) {
     if(this.vibrato) this.vibrato.increment = increment
   }
 
+  // Start playback event
   startEvent() {
     console.info('Start event')
-    document.body.classList.add('playing')
-    this.note.gain.gain.value = 1
+    document.body.classList.add('playing') // Add body CSS class
+    this.note.gain.gain.value = 1 // Silence main note gain
   }
 
+  // Stop playback event
   stopEvent() {
     console.info('Stop event')
-    document.body.classList.remove('playing')
-    this.note.gain.gain.value = 0
+    document.body.classList.remove('playing') // Remove body CSS class
+    this.note.gain.gain.value = 0 // Silence main note gain
   }
 
+  // Update values event (Link externally to dynamically update values)
   updateEvent(values={x:0,y:0}) {
     let volume = 1 - values.y
     let range = (values.x) * 250
