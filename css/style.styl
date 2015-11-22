@@ -29,10 +29,18 @@ body
   width 100%
   height 400px
   background white
+  &:focus
+    outline none
 
 .mute
   display block
   width 50%
+  height 60px
   margin-top 2rem
   margin-left auto
   margin-right auto
+
+body.playing
+  .audio-pad
+    background-color #FFF2B0
+    transition background-color 150ms
