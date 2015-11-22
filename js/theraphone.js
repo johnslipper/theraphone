@@ -168,11 +168,13 @@ class TheraPhone {
 
   startEvent() {
     console.info('Start event')
+    document.body.classList.add('playing')
     this.note.gain.gain.value = 1
   }
 
   stopEvent() {
     console.info('Stop event')
+    document.body.classList.remove('playing')
     this.note.gain.gain.value = 0
   }
 
