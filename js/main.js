@@ -1,10 +1,17 @@
+// Import dependencies
 import TheraPhone from './TheraPhone'
 import AudioPad from './AudioPad'
 import {displayMotionValues} from './debug'
 
+// Modernizr require
+require('browsernizr/test/touchevents')
+var Modernizr = require('browsernizr')
+
+// Setup class instances
 let theraPhone = new TheraPhone()
 let audioPad = new AudioPad({
   elID: "audioPad",
+  useTouchEvents: Modernizr.touchevents,
   startEvent: theraPhone.startEvent,
   stopEvent: theraPhone.stopEvent,
   updateEvent: theraPhone.updateEvent,
@@ -12,22 +19,20 @@ let audioPad = new AudioPad({
 })
 
 document.addEventListener("DOMContentLoaded", function() {
-  // Allow user triggered audio playback on iPhone (better fix needed)
+
   var iOSFix = document.getElementById('audioPad')
   var muteButton = document.getElementById('mute')
   var intro = document.getElementById('intro')
   var closeIntro = document.getElementById('closeIntro')
 
   // Intro Screen
-
   var hideIntro = function() {
     intro.style.display = 'none'
   }
   closeIntro.addEventListener('click', hideIntro)
 
-  // iOS Fix
+  // iOS Fix (use intro closing button to allow audio to run)
   closeIntro.addEventListener('click', theraPhone.noteOn.bind(theraPhone))
-  // iOSFix.addEventListener('click', theraPhone.noteOn.bind(theraPhone)) // Temp
 
   // Mute button
   muteButton.addEventListener('touchstart', theraPhone.mute.bind(theraPhone))
@@ -35,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
 })
 
 // Setup Accelerometer
-if(window.DeviceMotionEvent != undefined) {
+if(window.DeviceMotionEvent) {
   window.ondevicemotion = function(e) {
     // displayMotionValues(e) // Display values in debug div
 
