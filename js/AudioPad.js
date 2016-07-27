@@ -1,103 +1,96 @@
 class AudioPad {
   constructor(
-    config={
-      elID:"audioPad",
-      startEvent: function() {},
-      stopEvent: function() {},
-      updateEvent: function() {},
+    config = {
+      elID: 'audioPad',
+      startEvent() {},
+      stopEvent() {},
+      updateEvent() {},
       bindEventsTo: this,
-      useTouchEvents: true
+      useTouchEvents: true,
     }) {
-      this.config = config
-    this._setupCanvas()
+    this.config = config;
+    this.setupCanvas();
   }
 
   // Link to canvas element
-  _setupCanvas() {
-    this.element = document.getElementById(this.config.elID)
-    if(this.element === null) {
-      console.error('No SynthPad Element Found')
-      return false
-    }
-    this._setupEventListeners()
+  setupCanvas() {
+    this.element = document.getElementById(this.config.elID);
+    if (this.element) this.setupEventListeners();
   }
 
   // Setup pad event listeners based on whether touch is supported
-  _setupEventListeners() {
-    if(this.config.useTouchEvents) {
+  setupEventListeners() {
+    if (this.config.useTouchEvents) {
       // Disables scrolling on touch devices.
       document.body.addEventListener('touchmove', (event) => {
-        event.preventDefault()
-      }, false)
-      this.element.addEventListener('touchstart', this._startEvent.bind(this))
-      this.element.addEventListener('touchend', this._stopEvent.bind(this))
-    }
-    else {
-      document.addEventListener('mouseleave', this._stopEvent.bind(this))
-      this.element.addEventListener('mousedown', this._startEvent.bind(this))
-      this.element.addEventListener('mouseup', this._stopEvent.bind(this))
+        event.preventDefault();
+      }, false);
+      this.element.addEventListener('touchstart', this.startEvent.bind(this));
+      this.element.addEventListener('touchend', this.stopEvent.bind(this));
+    } else {
+      document.addEventListener('mouseleave', this.stopEvent.bind(this));
+      this.element.addEventListener('mousedown', this.startEvent.bind(this));
+      this.element.addEventListener('mouseup', this.stopEvent.bind(this));
     }
   }
 
   // Internal start event - also triggers external event
-  _startEvent(e) {
-    if(this.config.useTouchEvents) {
-      this.element.addEventListener('touchmove', this._updateEvent.bind(this))
+  startEvent() {
+    if (this.config.useTouchEvents) {
+      this.element.addEventListener('touchmove', this.updateEvent.bind(this));
+    } else {
+      this.element.addEventListener('mousemove', this.updateEvent.bind(this));
+      this.element.addEventListener('mouseleave', this.stopEvent.bind(this));
     }
-    else {
-      this.element.addEventListener('mousemove', this._updateEvent.bind(this))
-      this.element.addEventListener('mouseleave', this._stopEvent.bind(this))
-    }
-    let updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo)
-    let startCallback = this.config.startEvent.bind(this.config.bindEventsTo)
-    let outputValues = this._calcOutputValues(event)
-    startCallback()
-    updateCallback(outputValues)
+    const updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo);
+    const startCallback = this.config.startEvent.bind(this.config.bindEventsTo);
+    const outputValues = this.calcOutputValues(event);
+    startCallback();
+    updateCallback(outputValues);
   }
 
   // Internal stop event - also triggers external event
-  _stopEvent() {
-    if(this.config.useTouchEvents) {
-      this.element.removeEventListener('touchmove', this._updateEvent)
+  stopEvent() {
+    if (this.config.useTouchEvents) {
+      this.element.removeEventListener('touchmove', this.updateEvent);
+    } else {
+      this.element.removeEventListener('mousemove', this.updateEvent);
+      this.element.removeEventListener('mouseleave', this.stopEvent);
     }
-    else {
-      this.element.removeEventListener('mousemove', this._updateEvent)
-      this.element.removeEventListener('mouseleave', this._stopEvent)
-    }
-    let stopCallback = this.config.stopEvent.bind(this.config.bindEventsTo)
-    stopCallback()
+    const stopCallback = this.config.stopEvent.bind(this.config.bindEventsTo);
+    stopCallback();
   }
 
   // Internal update event - also triggers external event
-  _updateEvent(event) {
-    let outputValues = this._calcOutputValues(event)
-    let updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo)
-    updateCallback(outputValues)
+  updateEvent(event) {
+    const outputValues = this.calcOutputValues(event);
+    const updateCallback = this.config.updateEvent.bind(this.config.bindEventsTo);
+    updateCallback(outputValues);
   }
 
   // Calculate output values (between 0 and 1) based on pad coordinates
-  _calcOutputValues(event) {
-    let xInput=0, yInput=0
-    let width = this.element.offsetWidth
-    let height = this.element.offsetHeight
+  calcOutputValues(event) {
+    let xInput = 0;
+    let yInput = 0;
+    const width = this.element.offsetWidth;
+    const height = this.element.offsetHeight;
     // If non-touch event
-    if (event.type == 'mousedown' || event.type == 'mousemove') {
-      xInput = event.x,
-      yInput = event.y
+    if (event.type === 'mousedown' || event.type === 'mousemove') {
+      xInput = event.x;
+      yInput = event.y;
+    } else if (event.type === 'touchstart' || event.type === 'touchmove') {
+      // If touch event
+      const touch = event.touches[0];
+      xInput = touch.pageX;
+      yInput = touch.pageY;
     }
-    // If touch event
-    else if (event.type == 'touchstart' || event.type == 'touchmove') {
-      let touch = event.touches[0]
-      xInput = touch.pageX,
-      yInput = touch.pageY
-    }
-    let xOutput = ((xInput - this.element.offsetLeft) / width)
-    let yOutput = ((yInput - this.element.offsetTop) / height)
+    const xOutput = ((xInput - this.element.offsetLeft) / width);
+    const yOutput = ((yInput - this.element.offsetTop) / height);
     return {
       x: xOutput,
-      y: yOutput
-    }
+      y: yOutput,
+    };
   }
 }
 
-export default AudioPad
+export default AudioPad;
