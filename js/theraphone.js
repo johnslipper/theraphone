@@ -168,7 +168,7 @@ class TheraPhone {
 
   // Update main note gain
   updateVolume(vol) {
-    if (this.note.gain && vol > 0 && vol < 1) this.note.gain.gain.value = vol;
+    if (this.note.gain && vol >= 0 && vol < 1) this.note.gain.gain.value = vol;
   }
 
   // Update range of note vibrato
