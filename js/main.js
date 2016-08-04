@@ -22,11 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     bindEventsTo: theraPhone,
   });
 
-  const rippleCanvas = new RippleCanvas('audioPad');
+  const rippleCanvas = new RippleCanvas('audioPad', {
+    useTouchEvents: Modernizr.touchevents,
+    updateRipplePosition: true,
+  });
   // Store elements
-  const muteButton = document.getElementById('mute');
   const intro = document.getElementById('intro');
   const closeIntro = document.getElementById('closeIntro');
+  // const muteButton = document.getElementById('mute');
 
   // Intro Screen
   function hideIntro() {
@@ -39,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
   closeIntro.addEventListener('click', theraPhone.noteOn.bind(theraPhone));
 
   // Mute button
-  muteButton.addEventListener('touchstart', theraPhone.mute.bind(theraPhone));
-  muteButton.addEventListener('touchend', theraPhone.unMute.bind(theraPhone));
+  // muteButton.addEventListener('touchstart', theraPhone.mute.bind(theraPhone));
+  // muteButton.addEventListener('touchend', theraPhone.unMute.bind(theraPhone));
 
   // Setup Accelerometer
   if (window.DeviceMotionEvent) {
