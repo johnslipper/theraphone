@@ -2,24 +2,27 @@
 import TheraPhone from './TheraPhone';
 import AudioPad from './AudioPad';
 // import { displayMotionValues } from './debug';
+import RippleCanvas from './RippleCanvas';
+
 
 // Modernizr require
 require('browsernizr/test/touchevents');
 const Modernizr = require('browsernizr');
 
-// Setup class instances
-const theraPhone = new TheraPhone();
-const audioPad = new AudioPad({
-  elID: 'audioPad',
-  useTouchEvents: Modernizr.touchevents,
-  startEvent: theraPhone.startEvent,
-  stopEvent: theraPhone.stopEvent,
-  updateEvent: theraPhone.updateEvent,
-  bindEventsTo: theraPhone,
-});
-
 // On DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
+  // Setup class instances
+  const theraPhone = new TheraPhone();
+  const audioPad = new AudioPad({
+    elID: 'audioPad',
+    useTouchEvents: Modernizr.touchevents,
+    startEvent: theraPhone.startEvent,
+    stopEvent: theraPhone.stopEvent,
+    updateEvent: theraPhone.updateEvent,
+    bindEventsTo: theraPhone,
+  });
+
+  const rippleCanvas = new RippleCanvas('audioPad');
   // Store elements
   const muteButton = document.getElementById('mute');
   const intro = document.getElementById('intro');
@@ -38,17 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mute button
   muteButton.addEventListener('touchstart', theraPhone.mute.bind(theraPhone));
   muteButton.addEventListener('touchend', theraPhone.unMute.bind(theraPhone));
+
+  // Setup Accelerometer
+  if (window.DeviceMotionEvent) {
+    window.ondevicemotion = function(e) {
+      // displayMotionValues(e) // Display values in debug div
+
+      // Pitch adjust
+      const yFreq = e.accelerationIncludingGravity.y + 10; // Make value 0 - 20
+      if (yFreq > 0) { theraPhone.updateNotePitch((yFreq * 30) + 200); }
+    };
+  } else {
+    // TODO: No Accelerometer detected
+  }
 });
-
-// Setup Accelerometer
-if (window.DeviceMotionEvent) {
-  window.ondevicemotion = function(e) {
-    // displayMotionValues(e) // Display values in debug div
-
-    // Pitch adjust
-    const yFreq = e.accelerationIncludingGravity.y + 10; // Make value 0 - 20
-    if (yFreq > 0) { theraPhone.updateNotePitch((yFreq * 30) + 200); }
-  };
-} else {
-  // TODO: No Accelerometer detected
-}
