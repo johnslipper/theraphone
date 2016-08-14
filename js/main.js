@@ -13,19 +13,24 @@ const Modernizr = require('browsernizr');
 document.addEventListener('DOMContentLoaded', () => {
   // Setup class instances
   const theraPhone = new TheraPhone();
+  const rippleCanvas = new RippleCanvas('audioPad', {
+    useTouchEvents: Modernizr.touchevents,
+    updateRipplePosition: true,
+  });
+  function updateEvent(values) {
+    theraPhone.updateEvent(values);
+    // rippleCanvas.updateEvent(values);
+  }
+
   const audioPad = new AudioPad({
     elID: 'audioPad',
     useTouchEvents: Modernizr.touchevents,
     startEvent: theraPhone.startEvent,
     stopEvent: theraPhone.stopEvent,
-    updateEvent: theraPhone.updateEvent,
+    updateEvent,
     bindEventsTo: theraPhone,
   });
 
-  const rippleCanvas = new RippleCanvas('audioPad', {
-    useTouchEvents: Modernizr.touchevents,
-    updateRipplePosition: true,
-  });
   // Store elements
   const intro = document.getElementById('intro');
   const closeIntro = document.getElementById('closeIntro');
@@ -49,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.DeviceMotionEvent) {
     window.ondevicemotion = function(e) {
       // displayMotionValues(e) // Display values in debug div
-
+      const hue = parseInt((e.accelerationIncludingGravity.y + 10) * 18, 0);
+      rippleCanvas.updateBaseColor(hue);
       // Pitch adjust
       const yFreq = e.accelerationIncludingGravity.y + 10; // Make value 0 - 20
       if (yFreq > 0) { theraPhone.updateNotePitch((yFreq * 30) + 200); }

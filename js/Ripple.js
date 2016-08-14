@@ -1,10 +1,12 @@
 export default class Ripple {
-  constructor(canvas, context) {
+  constructor(canvas, context, config = {
+    hue: 50,
+  }) {
     if (canvas && context) {
       this.canvas = canvas;
       this.context = context;
       // this.hue = Ripple.rand(25, 0, 1);
-      this.hue = 50;
+      this.hue = config.hue;
       this.active = false;
     } else {
       // console.error('Invalid constructor aguments for Ripple Class');
