@@ -28,9 +28,10 @@ export default class RippleCanvas {
       this.rippleFrequency = 100;
       this.baseColor = {
         h: 50,
-        s: 100,
+        s: 50,
         l: 50,
       };
+      this.rippleOpacity = 1;
       this.useTouchEvents = config.useTouchEvents;
       this.updateRipplePosition = config.updateRipplePosition;
       this.initEvents();
@@ -68,6 +69,10 @@ export default class RippleCanvas {
       h, s, l,
     };
   }
+  updatePostionValues(position = { x: 0, y: 0 }) {
+    this.rippleFrequency = (position.x * 250) + 50;
+    this.rippleOpacity = 1 - position.y;
+  }
   drawScene() {
     this.context.fillStyle = `hsl(${this.baseColor.h}, ${this.baseColor.s}%, ${this.baseColor.l}%)`;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -85,7 +90,11 @@ export default class RippleCanvas {
     if (mod >= 0 && mod < 15) {
       if (this.isActive) {
         if (this.ripples[this.currentRipple].active === false) {
-          this.ripples[this.currentRipple].build(this.originPos, this.baseColor.h);
+          this.ripples[this.currentRipple].build(
+            this.originPos,
+            this.baseColor.h,
+            this.rippleOpacity
+          );
           if (this.currentRipple < this.ripples.length - 1) {
             this.currentRipple++;
           } else {

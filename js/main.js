@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   function updateEvent(values) {
     theraPhone.updateEvent(values);
-    // rippleCanvas.updateEvent(values);
+    rippleCanvas.updatePostionValues(values);
   }
 
   const audioPad = new AudioPad({
