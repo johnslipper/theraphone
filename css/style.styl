@@ -33,12 +33,13 @@ img
   .logo
     margin-left auto
     margin-right auto
-    margin-bottom 4rem
+    margin-bottom 3rem
   .button
     background-image none
     border none
     border-radius 3rem
     padding 1.25rem 3rem
+    margin-bottom 5rem
     background-color #691f86
     color white
     text-transform uppercase
@@ -48,6 +49,38 @@ img
     &:focus,
     &:active
       background-color #8b20c2
+
+.wrapper-bottom
+  position absolute
+  bottom 0
+  left 0
+  right 0
+
+.tips
+  position relative
+  display flex
+  background-color #dafaff
+
+h2, .tip
+  width: 33.333333%
+
+h2
+  height 100%
+  font-size 1rem
+  line-height 1.2
+  margin 0
+  padding 2rem 0
+  background-color #b3f5ff
+
+.tip
+  padding 1rem
+  img, span
+    display block
+  img
+    width 50%
+    margin .35rem auto .5rem
+  span
+    font-size .9rem
 
 .audio-pad
   display block

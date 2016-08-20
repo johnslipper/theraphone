@@ -1,7 +1,9 @@
 CACHE MANIFEST
-# v1.0
+# v1.1
 index.html
 build/css/style.css
 build/main.js
 img/theraphone.png
+img/icon-audio.svg
+img/icon-orientation-lock.svg
 audio/factory.hall.wav
